@@ -402,6 +402,55 @@ Day 2에서는 공공 데이터를 수집하여 클라우드 데이터베이스�
 
 ---
 
+---
+
+## 💡 [심화 가이드] 자동화와 클라우드 인프라 (Detailed Guide)
+
+### 1. 코드를 지키는 로봇 집사: GitHub Actions
+> **정의**: GitHub 저장소에서 발생하는 이벤트(Push, PR 등)를 감지하여 자동으로 작업을 수행하는 CI/CD 플랫폼.
+
+*   **핵심 구성 요소 (Core Components)**
+    1.  **Workflow**: 자동화된 전체 프로세스 (`.yaml` 파일로 정의)
+    2.  **Event**: 워크플로우를 실행시키는 방아쇠 (예: `on: push`)
+    3.  **Job**: 하나의 처리 단위 (가상 머신에서 실행됨)
+    4.  **Step**: Job 안에서 실행되는 개별 명령어 (스크립트 실행, 라이브러리 설치 등)
+
+*   **기본 사용법 (Workflow 예시)**
+    ```yaml
+    name: Hello World Automation
+    on: [push] # 코드를 올릴 때마다 실행
+    jobs:
+      build:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v2 # 코드 내려받기
+          - name: Run a one-line script
+            run: echo "Hello, World!" # 스크립트 실행
+    ```
+
+### 2. 백엔드 종합 선물 세트: Supabase
+> **정의**: 오픈소스 Firebase 대안으로, 관계형 DB(PostgreSQL)를 기반으로 하는 Backend-as-a-Service(BaaS).
+
+*   **핵심 기능 (Key Features)**
+    1.  **Database**: 강력한 PostgreSQL을 웹 대시보드에서 엑셀처럼 관리 (Table View)
+    2.  **Auto-generated API**: 테이블을 만들면 즉시 RESTful API가 생성됨 (별도 백엔드 코드 불필요)
+    3.  **Authentication**: 구글, 카카오 등 소셜 로그인 기능 1분 만에 연동
+    4.  **Edge Functions**: 가벼운 서버 사이드 로직을 전 세계 엣지 네트워크에서 실행
+
+*   **활용 예시 (Python 연결)**
+    ```python
+    from supabase import create_client
+    
+    url = "https://your-project.supabase.co"
+    key = "your-anon-key"
+    supabase = create_client(url, key)
+    
+    # 데이터 삽입 (SQL 없이 딕셔너리로!)
+    data = supabase.table("todos").insert({"task": "Buy milk"}).execute()
+    ```
+
+---
+
 # Day 3: Modern Data Stack & Pipeline Automation
 > **핵심 테마**: ELT 아키텍처 이해와 dbt를 활용한 데이터 모델링, 그리고 오케스트레이션 자동화
 
@@ -457,6 +506,57 @@ Day 2에서는 공공 데이터를 수집하여 클라우드 데이터베이스�
     - Day 3 실습 결과물의 코드 리뷰 및 개선점 도출
     - Day 4 'AI Agentic' 프로젝트를 위한 데이터 소스 및 아이디어 구체화
     - 다음 단계인 RAG와 AI 에이전트 연동을 위한 사전 준비
+
+---
+
+---
+
+## 💡 [심화 가이드] 데이터 흐름 제어와 비즈니스 지표 (Detailed Guide)
+
+### 1. 데이터 파이프라인의 관제탑: Airflow
+> **정의**: 에어비앤비(Airbnb)에서 만든, 복잡한 데이터 파이프라인을 코드로 작성(Python)하고 스케줄링 및 모니터링하는 플랫폼.
+
+*   **핵심 개념 (Key Concepts)**
+    1.  **DAG (Directed Acyclic Graph)**: 작업의 흐름도. "방향성(Directed)은 있지만 순환(Cycle)하지 않는 그래프".
+    2.  **Operator**: 실제 작업을 수행하는 일꾼 (예: `PythonOperator`, `BashOperator`).
+    3.  **Task**: Operator가 실행될 때의 인스턴스.
+    4.  **Scheduler**: 정해진 시간에 DAG를 실행시키는 알람 시계.
+
+*   **코드 구조 맛보기 (Python)**
+    ```python
+    from airflow import DAG
+    from airflow.operators.python import PythonOperator
+    
+    with DAG('my_pipeline', schedule_interval='@daily') as dag:
+        # 작업 1: 데이터 추출
+        t1 = PythonOperator(task_id='extract', python_callable=extract_data)
+        # 작업 2: 데이터 적재
+        t2 = PythonOperator(task_id='load', python_callable=load_data)
+        
+        t1 >> t2 # 작업 순서 정의 (t1이 끝나야 t2 실행)
+    ```
+
+### 2. 숫자의 단일 진실 공급원: Metric Store
+> **정의**: 비즈니스 지표(Metrics)를 코드(YAML 등)로 한 번만 정의하여, 모든 데이터 도구(BI, SQL, Python)에서 동일한 값을 조회하도록 보장하는 계층.
+
+*   **왜 필요한가? (The Problem)**
+    *   영업팀: "매출 = 판매액"
+    *   재무팀: "매출 = 판매액 - 환불액"
+    *   **결과**: 회의 시간마다 "누구 숫자가 맞아?"라고 싸우게 됨.
+
+*   **해결책 (The Solution)**
+    *   `Metric Store`에 "매출"을 정의하면, 누구나 똑같은 로직으로 계산된 값을 가져갑니다.
+    *   **dbt Semantic Layer**가 대표적인 예시입니다.
+
+*   **정의 예시 (YAML)**
+    ```yaml
+    metric:
+      name: revenue
+      label: "Total Revenue"
+      type: simple
+      type_params:
+        measure: total_sales_usd # 여기서 한 번 정의하면 끝!
+    ```
 
 ---
 
