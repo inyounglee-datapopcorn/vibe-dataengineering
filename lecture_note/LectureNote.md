@@ -334,9 +334,17 @@ Day 2에서는 공공 데이터를 수집하여 클라우드 데이터베이스�
 ### 3교시: 데이터 수집의 첫걸음 (Data Sourcing & API)
 - **주제**: 외부 데이터를 프로그램으로 가져오는 법 (API & Requests)
 - **내용**:
-    - 공공데이터포털 API 연동 및 고유 인증키 보안 관리
-    - `requests` 라이브러리를 활용한 API 호출 자동화 및 에러 핸들링
-    - 실습: 버스/지하철 실시간 위치 데이터 소싱하기
+    - **[Step 1] 공공데이터포털(data.go.kr) 가입 및 준비**
+        - 공식 홈페이지 접속 및 회원가입 (본인인증 필수)
+        - 마이페이지 > 일반 인증키 발급 (Encoding/Decoding 방식의 차이 이해)
+    - **[Step 2] 실무 데이터 활용 신청**
+        - 검색창에 '국토교통부 버스위치정보' 또는 '서울시 지하철 실시간 정보' 검색
+        - [활용신청] 버튼 클릭 후 사유 입력 (예: 교육용 파이프라인 구축 실습)
+        - 승인 즉시 마이페이지 내 '개발계정'에서 API Key 확인 가능
+    - **[Step 3] API 연동 및 보안 관리**
+        - `requests` 라이브러리를 활용한 API 호출 자동화 및 에러 핸들링
+        - API Key를 코드에 직접 노출하지 않는 환경변수(.env) 관리법 실습
+    - **[Step 4] 실습**: 버스/지하철 실시간 위치 데이터를 JSON으로 파싱하여 터미널에 출력하기
 
 ### 4교시: 데이터 가공 및 정제 (Data Transform & Pandas)
 - **주제**: '지분한' 데이터를 '쓸모 있는' 정보로 바꾸는 법
@@ -428,6 +436,18 @@ Day 2에서는 공공 데이터를 수집하여 클라우드 데이터베이스�
             run: echo "Hello, World!" # 스크립트 실행
     ```
 
+*   **🛠️ 핸즈온: 첫 번째 자동화 워크플로우 만들기**
+    1.  **디렉토리 생성**: 로컬 프로젝트 루트에 `.github/workflows` 폴더를 만듭니다. (점(.)으로 시작하는 이름에 주의!)
+    2.  **설정 파일 작성**: 해당 폴더 안에 `hello-actions.yml` 파일을 만들고 위의 예시 코드를 복사해 넣습니다.
+    3.  **코드 전송 (Commit & Push)**: 
+        ```bash
+        git add .github/workflows/hello-actions.yml
+        git commit -m "add: first github action"
+        git push origin main
+        ```
+    4.  **결과 확인**: 본인의 GitHub 저장소 웹 페이지로 이동하여 상단의 **[Actions]** 탭을 클릭합니다.
+    5.  **로그 검사**: 실행 중인 (또는 완료된) 'Hello World Automation' 항목을 클릭하고 `Run a one-line script` 단계의 출력값을 확인합니다.
+
 ### 2. 백엔드 종합 선물 세트: Supabase
 > **정의**: 오픈소스 Firebase 대안으로, 관계형 DB(PostgreSQL)를 기반으로 하는 Backend-as-a-Service(BaaS).
 
@@ -448,6 +468,13 @@ Day 2에서는 공공 데이터를 수집하여 클라우드 데이터베이스�
     # 데이터 삽입 (SQL 없이 딕셔너리로!)
     data = supabase.table("todos").insert({"task": "Buy milk"}).execute()
     ```
+
+*   **🛠️ 핸즈온: 클라우드 DB에 내 테이블 만들기**
+    1.  **프로젝트 생성**: [Supabase 공식 홈페이지](https://supabase.com/) 로그인 후 `New Project`를 클릭합니다.
+    2.  **테이블 생성**: 대시보드 왼쪽의 **[Table Editor]** -> `Create a new table`을 클릭합니다.
+    3.  **데이터 입력**: 이름(`todos`)과 컬럼(`task`: text)을 설정한 후, `Insert row`를 눌러 엑셀처럼 직접 데이터를 넣어봅니다.
+    4.  **연결 정보 확인**: **[Project Settings]** -> **[API]** 메뉴에서 `Project URL`과 `anon public key`를 복사합니다.
+    5.  **파이썬 연결**: 위 `활용 예시` 코드에 본인의 정보(URL, Key)를 넣고 실행하여 DB에 있는 데이터를 조회해봅니다.
 
 ---
 
@@ -471,6 +498,8 @@ Day 2에서는 공공 데이터를 수집하여 클라우드 데이터베이스�
     - dbt(data build tool)의 핵심 개념: Models, Seeds, Snapshots
     - `SELECT` 기반의 모듈화된 데이터 모델링 실습
     - 데이터 계보(Lineage) 확인 및 문서화 자동화
+    - **[실습 프로젝트]**: [초보자를 위한 dbt 기초 - 쇼핑몰 매출 분석]
+        - dbt_tutorial/AGENT.md
 
 ### 3교시: 파이프라인 오케스트레이션 기초 (Orchestration)
 - **주제**: 복잡한 작업 흐름을 한눈에 관리하는 법
@@ -536,6 +565,13 @@ Day 2에서는 공공 데이터를 수집하여 클라우드 데이터베이스�
         t1 >> t2 # 작업 순서 정의 (t1이 끝나야 t2 실행)
     ```
 
+*   **🛠️ 핸즈온: 나의 첫 번째 DAG 실행하기**
+    1.  **환경 준비**: 에이전트와 함께 만들어둔 `airflow_tutorial` 폴더 또는 본인의 가상환경으로 이동합니다.
+    2.  **스케줄러 켜기**: 터미널에서 `airflow scheduler` 명령어를 입력해 알람 시계를 켭니다.
+    3.  **대시보드 접속**: 새 터미널 창을 열어 `airflow webserver`를 실행하고 `localhost:8080`에 접속합니다.
+    4.  **작업 활성화**: 우리가 만든 `bitcoin_tracker_v1` 좌측의 토글 스위치를 **[ON]**으로 바꿉니다.
+    5.  **성공 확인**: 그래프 뷰(Graph View)에서 사각형 색깔이 **검은색(Running)**에서 **녹색(Success)**으로 변하는지 지켜봅니다.
+
 ### 2. 숫자의 단일 진실 공급원: Metric Store
 > **정의**: 비즈니스 지표(Metrics)를 코드(YAML 등)로 한 번만 정의하여, 모든 데이터 도구(BI, SQL, Python)에서 동일한 값을 조회하도록 보장하는 계층.
 
@@ -557,6 +593,117 @@ Day 2에서는 공공 데이터를 수집하여 클라우드 데이터베이스�
       type_params:
         measure: total_sales_usd # 여기서 한 번 정의하면 끝!
     ```
+
+*   **🛠️ 핸즈온: 지표 정의 연습하기**
+    1.  **문제 상황**: 마케팅팀은 "클릭률(CTR) = 클릭 / 노출"이라고 말하고, 광고팀은 "클릭률 = 고유 클릭 / 노출"이라고 주장합니다.
+    2.  **지표 통합**: 공통의 `analytics.yml` 파일을 만들고 아래와 같이 공식적으로 정의합니다.
+    3.  **실습**: `metric.name: ctr`, `measure: unique_clicks`와 같이 본인이 생각하는 올바른 정의를 YAML 형식으로 직접 적어봅니다.
+    4.  **검증**: 이렇게 정의된 파일이 있으면, 어떤 팀이든 이 파일만 참조하면 항상 같은 CTR 값을 얻게 됨을 이해합니다.
+
+*   **[실습 프로젝트]**: [초보자를 위한 Metric Store 기초 - 전사 매출 지표 통일]metric_store_tutorial/AGENT.md
+
+---
+
+## 💡 [심화 가이드] 알림과 협업 자동화 (Detailed Guide)
+
+### 4. 실시간 알림의 핵심: Slack API 연동
+> **정의**: 데이터 파이프라인의 성공/실패, 이상치 발견 등 중요한 이벤트를 팀 채널로 자동 전송하는 협업 도구 연동 기술.
+
+*   **비유 (Metaphor)**: 밤새 돌아가는 데이터 파이프라인이 문제를 만나면, 아침에 출근해서야 알게 되면 늦습니다. `Slack API`는 문제가 생기는 즉시 담당자의 핸드폰에 **비상벨**을 울려주는 시스템입니다.
+
+*   **연동 방법 2가지**
+    
+    **1) Incoming Webhook (가장 간단)**
+    - 한 줄의 URL만으로 메시지 전송 가능 (인증 불필요)
+    - 특정 채널에만 메시지를 보낼 수 있음
+    
+    **Step-by-Step:**
+    1. Slack 워크스페이스에서 `앱 추가` → `Incoming Webhooks` 검색
+    2. 채널 선택 후 Webhook URL 복사 (예: `https://hooks.slack.com/services/T00/B00/XXX`)
+    3. Python 코드로 메시지 전송:
+    ```python
+    import requests
+    
+    webhook_url = "your-webhook-url"
+    message = {"text": "🚨 데이터 파이프라인 실행 완료!"}
+    requests.post(webhook_url, json=message)
+    ```
+    
+    **2) Bot Token (고급 기능 활용)**
+    - 사용자 멘션, 파일 업로드, 메시지 수정 등 다양한 기능 사용 가능
+    - 여러 채널에 동적으로 메시지를 보낼 수 있음
+    
+    **Step-by-Step:**
+    1. Slack App 생성 (`api.slack.com/apps` → Create New App)
+    2. `OAuth & Permissions`에서 `chat:write` 권한 추가
+    3. 워크스페이스에 앱 설치 후 **Bot User OAuth Token** 복사
+    4. Python SDK 사용:
+    ```python
+    from slack_sdk import WebClient
+    
+    client = WebClient(token="xoxb-your-bot-token")
+    client.chat_postMessage(
+        channel="#data-alerts",
+        text="✅ 일일 매출 데이터 적재 완료! 총 1,234건"
+    )
+    ```
+
+*   **실무 활용 예시**
+    - **Airflow DAG 실패 알림**: 특정 Task가 3번 재시도 후에도 실패하면 Slack으로 에러 로그 전송
+    - **Great Expectations 검증 실패**: 데이터 품질 검사에서 임계값을 초과하면 즉시 알림
+    - **일일 리포트 자동 전송**: 매일 오전 9시에 전날 집계된 핵심 지표를 팀 채널에 공유
+
+---
+
+---
+
+## 💡 [심화 가이드] 데이터 신뢰성과 품질 관리 (Detailed Guide)
+
+### 3. 데이터 건강검진: Great Expectations (GX)
+> **정의**: 데이터가 우리가 기대하는 원칙(Expectations)을 따르고 있는지 자동으로 검사하고 결과 보고서(Data Docs)를 만들어주는 오픈소스 데이터 품질 관리 도구.
+
+*   **비유 (Metaphor)**: 우리 몸의 이상을 미리 발견하기 위해 정기 검진을 받는 것처럼, 데이터도 파이프라인 안에서 병들지 않았는지(비정상적인 값이 들어오지 않았는지) `Great Expectations`라는 **데이터 건강검진 센터**를 거쳐야 합니다.
+
+*   **핵심 개념 (Key Concepts)**
+    1.  **Expectations**: 데이터에 대한 '기대값' (예: "ID 컬럼에는 빈 값이 없어야 해!", "나이는 0보다 커야 해!")
+    2.  **Validate**: 실제 데이터를 기대값과 대조하여 합격/불합격을 판정하는 과정.
+    3.  **Data Docs**: 검사 결과를 누구나 이해하기 쉽게 시각화된 HTML 문서로 생성.
+    4.  **Checkpoint**: 데이터 수집 직후나 DB 적재 전 등 특정 시점에서 검사를 실행하는 검문소.
+
+*   **코드 예시 (Python)**
+    ```python
+    import great_expectations as gx
+
+    # 1. 데이터 소스 연결 (예: pandas dataframe)
+    df_ge = gx.from_pandas(your_dataframe)
+
+    # 2. '기대치' 설정하기 (ID는 유효해야 하고, 가격은 0 이상이어야 함)
+    df_ge.expect_column_values_to_not_be_null("order_id")
+    df_ge.expect_column_values_to_be_between("amount", min_value=0)
+
+    # 3. 검사 결과 확인
+    results = df_ge.validate()
+    print(results.success) # True/False
+    ```
+
+*   **주요 테스트 유형 (Common Expectations)**
+    
+    1.  **컬럼 존재성 검사**: 테이블에 필요한 컬럼이 있는지, 전체 컬럼 개수가 맞는지 확인
+    2.  **NULL 값 검사**: 필수 필드는 빈 값이 없는지, 선택 필드는 NULL 허용 여부 확인
+    3.  **데이터 타입 검사**: 각 컬럼이 정해진 데이터 타입(int, float, string 등)을 따르는지 확인
+    4.  **값의 범위 검사**: 숫자 데이터가 합리적인 범위(0~100점, 최저/최고 온도 등) 안에 있는지
+    5.  **값의 집합 검사**: 상태 코드나 카테고리가 미리 정의된 값들만 가지는지 (예: "대기중", "완료", "취소")
+    6.  **유일성 검사**: Primary Key처럼 중복되면 안 되는 컬럼에 중복 값이 없는지
+    7.  **정규식 패턴 검사**: 이메일, 전화번호 등이 올바른 형식을 따르는지 (regex로 검증)
+    8.  **통계적 이상치 검사**: 평균값, 표준편차, 분산 등이 정상 범위를 벗어나지 않았는지
+
+
+*   **🛠️ 핸즈온: 나의 데이터 건강검진 리포트 만들기**
+    1.  **설치**: `pip install great_expectations`
+    2.  **초기화**: 터미널에서 `great_expectations init` 입력 (자동으로 필요한 폴더 구조가 생성됩니다.)
+    3.  **데이터 연결**: 본인의 CSV 또는 DB 데이터를 GX에 연결합니다.
+    4.  **검사 규칙 생성**: "날짜 컬럼이 비어있지 않은가?"와 같은 간단한 규칙을 추가해 봅니다.
+    5.  **리포트 확인**: `great_expectations docs build`를 실행하여 브라우저에서 환상적인 **데이터 품질 통계 리포트**를 확인해 보세요!
 
 ---
 
