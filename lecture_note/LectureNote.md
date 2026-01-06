@@ -476,6 +476,51 @@ Day 2에서는 공공 데이터를 수집하여 클라우드 데이터베이스�
     4.  **연결 정보 확인**: **[Project Settings]** -> **[API]** 메뉴에서 `Project URL`과 `anon public key`를 복사합니다.
     5.  **파이썬 연결**: 위 `활용 예시` 코드에 본인의 정보(URL, Key)를 넣고 실행하여 DB에 있는 데이터를 조회해봅니다.
 
+*   **🛠️ 핸즈온: DBeaver로 Supabase DB 연결하기 (GUI 환경)**
+    
+    **1) DBeaver Community 설치**
+    - [공식 홈페이지](https://dbeaver.io/download/) 접속하여 본인의 OS에 맞는 버전 다운로드
+    - macOS: `.dmg` 파일 설치 후 Applications 폴더로 이동
+    - Windows: `.exe` 설치 파일 실행
+    - Linux: `sudo snap install dbeaver-ce` 또는 `.deb`/`.rpm` 패키지 설치
+    
+    **2) Supabase 연결 정보 수집**
+    - Supabase 대시보드에서 **[Project Settings]** → **[Database]** 이동
+    - **Connection Info** 섹션에서 다음 정보 확인:
+        - Host: `db.xxxxx.supabase.co`
+        - Port: `5432`
+        - Database: `postgres`
+        - User: `postgres`
+        - Password: 프로젝트 생성 시 설정한 비밀번호 (분실 시 리셋 가능)
+    
+    **3) DBeaver에서 새 연결 생성**
+    - DBeaver 실행 후 상단의 **플러그 아이콘(New Database Connection)** 클릭
+    - `PostgreSQL` 선택 → Next
+    - 연결 정보 입력:
+        - **Host**: Supabase에서 복사한 Host 주소
+        - **Port**: `5432`
+        - **Database**: `postgres`
+        - **Username**: `postgres`
+        - **Password**: 본인의 Supabase DB 비밀번호
+        - **Show all databases** 체크 해제 (선택사항)
+    - **Test Connection** 버튼 클릭하여 연결 확인
+    - 처음 연결 시 PostgreSQL 드라이버 다운로드 요청이 뜨면 **Download** 클릭
+    
+    **4) SQL 쿼리 실행 및 데이터 탐색**
+    - 왼쪽 Database Navigator에서 `postgres` → `Schemas` → `public` → `Tables` 확장
+    - 본인이 만든 테이블(예: `todos`) 우클릭 → **View Data** 선택
+    - 상단의 **SQL Editor** 아이콘을 눌러 직접 쿼리 작성:
+        ```sql
+        SELECT * FROM todos WHERE task LIKE '%milk%';
+        ```
+    - 쿼리 실행: `Ctrl+Enter` (Mac: `Cmd+Enter`)
+    
+    **5) 완료 포인트**
+    - DBeaver에서 Supabase의 테이블 구조를 시각적으로 확인할 수 있나요?
+    - SQL 쿼리를 직접 작성하여 데이터를 조회/수정할 수 있나요?
+    - 이제 Python 코드 없이도 GUI 환경에서 데이터베이스를 관리할 수 있게 되었습니다! 🎉
+
+
 ---
 
 # Day 3: Modern Data Stack & Pipeline Automation
@@ -704,6 +749,112 @@ Day 2에서는 공공 데이터를 수집하여 클라우드 데이터베이스�
     3.  **데이터 연결**: 본인의 CSV 또는 DB 데이터를 GX에 연결합니다.
     4.  **검사 규칙 생성**: "날짜 컬럼이 비어있지 않은가?"와 같은 간단한 규칙을 추가해 봅니다.
     5.  **리포트 확인**: `great_expectations docs build`를 실행하여 브라우저에서 환상적인 **데이터 품질 통계 리포트**를 확인해 보세요!
+
+---
+
+---
+
+## 💡 [심화 가이드] 클라우드 플랫폼 기초 (Cloud Platform Basics)
+
+### 5. AWS 기초 셋팅 (Amazon Web Services)
+> **정의**: 전 세계에서 가장 많이 사용되는 클라우드 컴퓨팅 플랫폼으로, 데이터 저장, 연산, 네트워킹 등 200개 이상의 서비스를 제공합니다.
+
+*   **핵심 서비스 3가지 (Data Engineering 필수)**
+    
+    **1) IAM (Identity and Access Management) - 권한 관리**
+    - 사용자, 그룹, 역할을 생성하여 AWS 리소스에 대한 접근 제어
+    - **실습 Step:**
+        1. AWS Console 로그인 → `IAM` 검색
+        2. Users → `Add User` → 이름 입력 (예: `data-engineer-user`)
+        3. `Attach policies directly` → `AmazonS3FullAccess` 선택
+        4. 사용자 생성 후 `Security credentials` → `Create access key`
+        5. **Access Key ID**와 **Secret Access Key** 안전하게 저장 (한 번만 표시됨!)
+    
+    **2) S3 (Simple Storage Service) - 객체 스토리지**
+    - 무제한 용량의 파일 저장소 (CSV, JSON, Parquet 등 데이터 파일 보관)
+    - **실습 Step:**
+        1. AWS Console → `S3` 검색 → `Create bucket`
+        2. Bucket 이름 입력 (전 세계에서 유일해야 함, 예: `my-data-lake-2026`)
+        3. Region 선택 (예: `ap-northeast-2` = 서울)
+        4. `Block all public access` 활성화 (보안 필수!)
+        5. Python으로 파일 업로드:
+        ```python
+        import boto3
+        s3 = boto3.client('s3', 
+            aws_access_key_id='YOUR_ACCESS_KEY',
+            aws_secret_access_key='YOUR_SECRET_KEY')
+        s3.upload_file('local_file.csv', 'my-data-lake-2026', 'data/file.csv')
+        ```
+    
+    **3) Lambda - 서버리스 함수**
+    - 서버 관리 없이 코드만 실행하는 환경 (API 호출, 데이터 변환 등에 활용)
+    - **실습 Step:**
+        1. AWS Console → `Lambda` 검색 → `Create function`
+        2. `Author from scratch` 선택
+        3. Function 이름 입력 → Runtime은 `Python 3.x` 선택
+        4. 코드 편집기에서 간단한 함수 작성:
+        ```python
+        def lambda_handler(event, context):
+            return {'statusCode': 200, 'body': 'Hello from Lambda!'}
+        ```
+        5. `Test` 버튼으로 실행 결과 확인
+
+*   **비용 관리 TIP**: AWS Free Tier를 활용하면 S3 5GB, Lambda 100만 건 요청/월까지 무료!
+
+---
+
+### 6. GCP 기초 셋팅 (Google Cloud Platform)
+> **정의**: Google이 제공하는 클라우드 플랫폼으로, BigQuery와 같은 강력한 데이터 분석 도구와 AI/ML 서비스로 유명합니다.
+
+*   **핵심 서비스 3가지 (Data Engineering 필수)**
+    
+    **1) IAM (Identity and Access Management) - 서비스 계정**
+    - GCP 리소스에 접근하기 위한 인증 정보 생성
+    - **실습 Step:**
+        1. [GCP Console](https://console.cloud.google.com/) 로그인 → 프로젝트 생성
+        2. `IAM & Admin` → `Service Accounts` → `Create Service Account`
+        3. 계정 이름 입력 (예: `data-pipeline-sa`)
+        4. Role 선택: `Storage Admin` (GCS 전체 권한)
+        5. `Create Key` → JSON 다운로드 (이 파일로 인증!)
+        6. 환경변수 설정:
+        ```bash
+        export GOOGLE_APPLICATION_CREDENTIALS="/path/to/key.json"
+        ```
+    
+    **2) GCS (Google Cloud Storage) - 객체 스토리지**
+    - AWS S3와 유사한 파일 저장소
+    - **실습 Step:**
+        1. GCP Console → `Cloud Storage` → `Create Bucket`
+        2. Bucket 이름 입력 (예: `my-gcp-data-lake`)
+        3. Location type: `Region` → `asia-northeast3` (서울)
+        4. `gsutil` CLI로 파일 업로드:
+        ```bash
+        gsutil cp local_file.csv gs://my-gcp-data-lake/data/
+        ```
+        5. Python으로 접근:
+        ```python
+        from google.cloud import storage
+        client = storage.Client()
+        bucket = client.bucket('my-gcp-data-lake')
+        blob = bucket.blob('data/file.csv')
+        blob.upload_from_filename('local_file.csv')
+        ```
+    
+    **3) Cloud Functions - 서버리스 함수**
+    - HTTP 요청이나 Pub/Sub 메시지로 트리거되는 함수
+    - **실습 Step:**
+        1. GCP Console → `Cloud Functions` → `Create Function`
+        2. Function 이름 입력 → Trigger type: `HTTP`
+        3. Runtime: `Python 3.x` 선택
+        4. `main.py`에 코드 작성:
+        ```python
+        def hello_gcp(request):
+            return 'Hello from GCP Cloud Functions!'
+        ```
+        5. Entry point: `hello_gcp` 입력 → Deploy
+        6. 생성된 URL로 브라우저 접속하여 결과 확인
+
+*   **비용 관리 TIP**: GCP도 $300 크레딧을 제공하며, Cloud Functions는 월 200만 건까지 무료!
 
 ---
 
