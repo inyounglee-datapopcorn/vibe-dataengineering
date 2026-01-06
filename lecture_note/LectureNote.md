@@ -338,9 +338,14 @@ Day 2에서는 공공 데이터를 수집하여 클라우드 데이터베이스�
         - 공식 홈페이지 접속 및 회원가입 (본인인증 필수)
         - 마이페이지 > 일반 인증키 발급 (Encoding/Decoding 방식의 차이 이해)
     - **[Step 2] 실무 데이터 활용 신청**
-        - 검색창에 '국토교통부 버스위치정보' 또는 '서울시 지하철 실시간 정보' 검색
+        - 검색창에 '[서울특별시 버스위치정보](https://www.data.go.kr/data/15000332/openapi.do)' 또는 '1. [서울시 지하철 실시간 도착정보](https://data.seoul.go.kr/dataList/OA-12764/A/1/datasetView.do#)' 2. [서울시 지하철 실시간 열차 위치정보](https://data.seoul.go.kr/dataList/OA-12601/A/1/datasetView.do) 검색
         - [활용신청] 버튼 클릭 후 사유 입력 (예: 교육용 파이프라인 구축 실습)
         - 승인 즉시 마이페이지 내 '개발계정'에서 API Key 확인 가능
+
+        - http://ws.bus.go.kr/api/rest/buspos/getBusPosByRouteSt?serviceKey=jVwm8WYdMpGK4BqfwpN6eZvd0gaG5oJ5HihWrIhNwhaEdvvtLZHVaChaUQh8fO5GaWlRqxFROPnItSiO7%2Flf%2BA%3D%3D&startOrd=1&endOrd=10
+        -  http://swopenapi.seoul.go.kr/api/subway/5a4c61745532696e393557726c696f/xml/realtimeStationArrival/0/5/%EC%84%9C%EC%9A%B8
+        - http://swopenapi.seoul.go.kr/api/subway/5a4c61745532696e393557726c696f/xml/realtimePosition/0/5/1%ED%98%B8%EC%84%A0
+
     - **[Step 3] API 연동 및 보안 관리**
         - `requests` 라이브러리를 활용한 API 호출 자동화 및 에러 핸들링
         - API Key를 코드에 직접 노출하지 않는 환경변수(.env) 관리법 실습
