@@ -249,6 +249,38 @@ AI가 내 깃허브 이슈나 코드를 직접 검색하고 이해하게 하려�
 
 ---
 
+
+## 🏗️ 데이터 파이프라인 설계 원칙 (Design Principles)
+
+데이터 엔지니어링의 핵심은 단순히 데이터를 옮기는 것이 아니라, **"안정적이고, 믿을 수 있으며, 다시 실행 가능한"** 시스템을 만드는 것입니다.
+
+### 1. 멱등성 (Idempotency) ⭐️
+- **정의**: 동일한 작업을 여러 번 수행해도 결과가 항상 같아야 함.
+- **중요성**: 파이프라인이 중간에 실패하여 재실행(Rerun)할 때, 데이터가 중복되거나 꼬이는 것을 방지합니다.
+- **실천**: `INSERT` 대신 `UPSERT`를 사용하거나, 적재 전 해당 범위의 데이터를 삭제(`Overwrite`)하는 전략을 사용합니다.
+
+### 2. 재현성 (Reproducibility)
+- **정의**: 원본 데이터만 있다면 언제든 과거의 특정 시점 데이터를 다시 만들어낼 수 있어야 함.
+- **실천**: 로우(Raw) 데이터를 가공 없이 그대로 저장하는 영역(Bronze/Raw Layer)을 반드시 유지합니다.
+
+### 3. 모듈화 (Modularity)
+- **정의**: 수집(Extract), 변환(Transform), 적재(Load) 단계를 독립적인 컴포넌트로 분리.
+- **중요성**: 특정 단계에서 에러가 났을 때 전체를 고치지 않고 해당 모듈만 수정 및 테스트할 수 있습니다.
+
+### 4. 관측 가능성 (Observability) & 로깅
+- **정의**: 파이프라인의 상태(성공, 실패, 지연 시간)와 데이터의 흐름을 한눈에 파악할 수 있어야 함.
+- **실천**: Slack 알림 연동, 대시보드 활용, 상세한 에러 로그 기록을 통해 '보이지 않는 장애'를 방지합니다.
+
+### 5. 데이터 품질 및 검증 (Data Quality & Validation)
+- **원칙**: 쓰레기가 들어가면 쓰레기가 나온다 (GIGO: Garbage In, Garbage Out).
+- **실천**: 적재 전 NULL 값 체크, 데이터 타입 검증, 비즈니스 로직(예: 가격은 0보다 커야 함) 검증을 자동화합니다 (예: Great Expectations).
+
+### 6. 실패 대비 및 복구 (Fault Tolerance & Backfill)
+- **정의**: 시스템은 언제든 실패할 수 있음을 가정하고 설계(Design for Failure).
+- **실천**: 실패 시 자동 재시도(Retry) 로직과 과거 누락된 데이터를 채워 넣는 백필(Backfill) 프로세스를 고려합니다.
+
+---
+
 ## 🎯 2026 AI/AX 전문가 취업 커리큘럼 (Trend 반영)
 
 2026년 기업의 최우선 과제는 **"AI 도입을 넘어선 실질적인 비즈니스 전환(AX, AI Transformation)"**입니다. 단순히 AI 기술을 아는 수준을 넘어, 프로젝트 전체 아키텍처를 설계하고 생산성을 혁신할 수 있는 전문가를 지향합니다.
@@ -862,6 +894,54 @@ Day 2에서는 공공 데이터를 수집하여 클라우드 데이터베이스�
 *   **비용 관리 TIP**: GCP도 $300 크레딧을 제공하며, Cloud Functions는 월 200만 건까지 무료!
 
 ---
+
+### 7. Docker 기초 & Airflow 환경 구축 가이드 (Docker & Airflow Setup)
+> **정의**: 애플리케이션을 실행하기 위한 모든 환경(OS, 라이브러리, 설정 등)을 하나의 "컨테이너"에 담아 배포하는 기술.
+
+*   **비유 (Metaphor)**:
+    - **내 컴퓨터 (로컬)**: 집마다 주방 기구와 가스레인지가 다 달라서 요리법이 달라짐.
+    - **Docker (밀키트/도시락)**: 재료와 조리 도구가 완벽하게 갖춰진 "도시락"을 배달함. 전자레인지(Docker 엔진)만 있으면 어디서든 똑같은 맛의 요리(프로그램)를 먹을 수 있음.
+    - **왜 쓰나요?**: "제 컴퓨터에서는 되는데요?"라는 변명을 없애줍니다(서버 환경의 통일).
+
+*   **Step 1: Docker Desktop 설치 (Installation)**
+    1.  **다운로드**: [Docker 공식 홈페이지](https://www.docker.com/products/docker-desktop/) 접속 → OS(Mac with Apple Silicon/Intel, Windows)에 맞게 다운로드.
+    2.  **설치**: 다운로드한 파일(`.dmg` or `.exe`) 실행. (Mac은 아이콘을 Applications 폴더로 드래그)
+    3.  **실행**: Docker Desktop 앱 실행. (고래 아이콘이 상태 표시줄에 뜨고 초록색 불이 들어와야 정상)
+    
+*   **Step 2: 설치 확인 (Verification)**
+    - 터미널(Terminal)을 열고 다음 명령어 입력:
+    ```bash
+    docker --version
+    # Docker version 20.10.xx, build xxx... (버전 정보가 뜨면 성공)
+    
+    docker run hello-world
+    # "Hello from Docker!" 메시지가 뜨면 컨테이너 실행 성공
+    ```
+
+*   **Step 3: Apache Airflow 이미지 가져오기 (Pulling Image)**
+    - Airflow는 복잡한 설치 과정 없이 Docker 이미지를 가져오면 바로 실행할 수 있습니다.
+    - **이미지 다운로드**:
+    ```bash
+    docker pull apache/airflow
+    # 다운로드가 완료될 때까지 대기
+    ```
+    - **이미지 확인**:
+    ```bash
+    docker images
+    # REPOSITORY       TAG       IMAGE ID       SIZE
+    # apache/airflow   latest    xxxxxxxxx      1.2GB (목록에 보이면 성공)
+    ```
+
+*   **Step 4: 맛보기 실행 (Simple Run)**
+    - 복잡한 설정(`docker-compose`) 없이 Airflow가 켜지는지 확인만 해봅니다.
+    ```bash
+    docker run -p 8080:8080 apache/airflow standalone
+    ```
+    - 실행 후 브라우저에서 `localhost:8080` 접속.
+    - 터미널에 출력된 `username`과 `password`로 로그인.
+
+---
+
 
 # Day 4: AI Agentic Engineering & Final Showcase
 > **핵심 테마**: 자율형 AI 에이전트와 RAG 시스템 구축을 통한 지능형 데이터 파이프라인 완성
