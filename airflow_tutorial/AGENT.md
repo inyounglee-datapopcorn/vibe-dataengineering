@@ -56,7 +56,7 @@ airflow users create \
 ```python
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-from datetime import datetime
+from datetime import datetime, timedelta
 import requests
 import csv
 
@@ -77,18 +77,33 @@ def save_price(ti):
         writer = csv.writer(f)
         writer.writerow([datetime.now(), price])
 
-# 3. DAG 정의 (작업 명세서)
+# 3. DAG 정의 (작업 명세서 - 모든 주요 설정 옵션 포함)
 with DAG(
-    'bitcoin_tracker_v1',
-    start_date=datetime(2024, 1, 1),
-    schedule_interval='*/10 * * * *', # 매 10분마다 실행
-    catchup=False
+    dag_id='bitcoin_tracker_v1',         # DAG의 고유 ID (파일 내에서 유일해야 함)
+    description='비트코인 가격을 추적하고 저장합니다.', # DAG에 대한 설명
+    start_date=datetime(2024, 1, 1),     # DAG가 시작되는 시각
+    # end_date=datetime(2025, 1, 1),     # DAG가 종료되는 시각 (없으면 무한 반복)
+    schedule_interval='*/10 * * * *',    # 실행 주기 (Cron 표현식: 매 10분마다)
+    catchup=False,                       # 과거 예약 시간 중 실행되지 않은 작업을 백필(Backfill)할지 여부
+    tags=['finance', 'bitcoin', 'kdt'],  # UI에서 필터링을 조절하기 위한 태그
+    max_active_runs=1,                   # 동시에 활성화될 수 있는 DAG Run의 최대 합계
+    # max_active_tasks=16,               # DAG 내에서 동시에 실행될 수 있는 Task의 최대 개수
+    dagrun_timeout=timedelta(hours=),   # DAG Run이 성공으로 끝나야 하는 최대 시간
+    default_args={                       # 하위 작업(Task)들에 공통으로 적용될 기본 설정들
+        'owner': 'airflow',              # 소유자 정보
+        'email' : ['all@datapopcorn.ai', '1@datapopcorn.ai', '2@datapopcorn.ai'],
+        'depends_on_past': False,        # 이전 날짜의 Task가 성공해야만 현재 Task를 실행할지 여부
+        'retries': 1,                    # 실패 시 재시도 횟수
+        'retry_delay': timedelta(minutes=5), # 재시도 간격
+        'email_on_failure': True,       # 실패 시 이메일 알림 여부
+        'on_failure_callback': None,   # 실패 시 실행할 함수 (Slack)
+    }
 ) as dag:
 
     # Task 정의
     fetch_task = PythonOperator(
-        task_id='fetch_price',
-        python_callable=fetch_btc_price
+        task_id='fetch_task',
+        python_callable=fetch_task
     )
 
     save_task = PythonOperator(
