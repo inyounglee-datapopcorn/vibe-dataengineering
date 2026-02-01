@@ -119,6 +119,22 @@ AI Agent가 사람처럼 일하기 위해 필요한 4가지 핵심 부품이 있
 - LLM이 대화 도중에 **"아, 이건 코드를 짜야 해결되겠는데?"** 싶을 때, 미리 정의된 함수(기능)를 호출하는 능력입니다.
 - Agent 구현의 핵심 기술입니다.
 
+### 🔹 A2A (Agent to Agent)
+- **에이전트 간의 대화 및 협업**을 의미합니다. 
+- 복잡한 문제를 풀기 위해 하나의 에이전트가 모든 일을 하는 것이 아니라, 전문화된 다른 에이전트에게 업무를 요청하고 결과를 받는 네트워크 구조입니다.
+
+### 🔹 MCP (Model Context Protocol)
+- Anthropic이 제안한 **데이터와 AI 모델 사이의 표준 연결 규격**입니다.
+- 서로 다른 에이전트나 도구들이 구글 드라이브, 슬랙, 로컬 파일 등 다양한 데이터 소스를 일관된 방식으로 읽고 쓸 수 있게 해주는 '에이전트용 USB 포트' 같은 개념입니다.
+ 
+### 🔹 Orchestration (오케스트레이션)
+- 지휘자가 오케스트라를 지휘하듯, **여러 에이전트와 도구의 실행 순서와 흐름을 관리**하는 것입니다.
+- 어떤 상황에서 어떤 에이전트를 깨울지, 에러가 나면 어떻게 복구할지 등의 전체 시스템 제어 로직을 뜻합니다.
+
+### 🔹 Agentic Workflow (에이전틱 워크플로우)
+- 단순히 프롬프트 한 번으로 끝내는 것이 아니라, **반복(Loop), 자가 수정(Self-correction), 계획(Planning)** 과정을 포함하는 지능형 업무 흐름입니다.
+- 결과가 만족스럽지 않으면 다시 시도하거나 계획을 수정하는 역동적인 구조가 특징입니다.
+
 ---
 
 ## 6. 실전! 에이전트 경험해보기 (Hands-on Tips)
@@ -155,17 +171,18 @@ AI Agent가 사람처럼 일하기 위해 필요한 4가지 핵심 부품이 있
 2.  **[CrewAI 강의노트](./LectureNote-CrewAI.md)**: 기획자, 개발자 등 역할(Role)을 나눠서 팀으로 일하는 에이전트.
 3.  **[AutoGen 강의노트](./LectureNote-AutoGen.md)**: 대화와 코드 실행을 통해 복잡한 문제를 푸는 연구실 스타일 에이전트.
 4.  **[OpenClaw 강의노트](./LectureNote-OpenClaw.md)**: 슬랙, 텔레그램 등 메시지 채널을 연결하는 개인용 AI 비서 구축.
+5.  **[LlamaIndex 강의노트](./LectureNote-LlamaIndex.md)**: 방대한 문서를 검색(RAG)하고 질문에 답하는 데이터 특화 에이전트.
 
 ---
 
 ### 📊 프레임워크 한눈에 비교 (Cheat Sheet)
 
-| 구분 | LangChain | LangGraph | CrewAI | AutoGen |
-| :--- | :--- | :--- | :--- | :--- |
-| **핵심 철학** | **Building Blocks**<br>(조립식 블록) | **State Machines**<br>(상태 머신 & 제어) | **Role-Playing**<br>(역할극 & 팀워크) | **Conversation**<br>(대화 & 토론) |
-| **제어 권한** | 개발자가 일일이 연결 | **아주 높음 (정밀 제어)** | 중간 (역할에 위임) | 낮음 (자율성 높음) |
-| **난이도** | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐ |
-| **추천 상황** | 일반적인 LLM 앱/챗봇 | **실제 서비스(Production)** | 비즈니스 프로세스 자동화 | 복잡한 코딩/연구 과제 |
+| 구분 | LangChain | LangGraph | CrewAI | AutoGen | LlamaIndex |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **핵심 철학** | **Building Blocks**<br>(조립식 블록) | **State Machines**<br>(상태 머신 & 제어) | **Role-Playing**<br>(역할극 & 팀워크) | **Conversation**<br>(대화 & 토론) | **Data-Centric**<br>(데이터 중심) |
+| **제어 권한** | 개발자가 일일이 연결 | **아주 높음 (정밀 제어)** | 중간 (역할에 위임) | 낮음 (자율성 높음) | 높음 (데이터 흐름 제어) |
+| **난이도** | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
+| **추천 상황** | 일반적인 LLM 앱/챗봇 | **실제 서비스(Production)** | 비즈니스 프로세스 자동화 | 복잡한 코딩/연구 과제 | RAG, 지식 기반 챗봇 |
 
 ### 📋 주요 업무 및 요구사항 (Job Requirements)
 실제 채용 공고(Wanted, LinkedIn 등)에서 자주 보이는 문구들입니다.
@@ -215,6 +232,48 @@ https://docs.google.com/spreadsheets/d/1i2n3mvFYfEF3qB3boLtko5WJuGO5Khi0IYqfm2yJ
     - A2A (Agent to Agent), MCP (Model Context Protocol)에 대한 이해가 있으신 분
     - Web Streaming (WebSocket, SSE) 아키텍처 설계 경험
     </details>
+    
+    #### 🔍 카카오 공고 심층 분석: "에이전트 개발자에게 요구하는 정석"
+    1.  **플랫폼을 넘어 네트워크로 (Agent Builder & A2A)**: 단순히 챗봇 하나를 만드는 것이 아니라, 누구나 에이전트를 조립할 수 있는 **플랫폼**과 에이전트끼리 대화하는 **A2A(Agent to Agent) 생태계** 구축이 목표입니다. 
+    2.  **행동하는 AI (Function Calling)**: LLM이 정해진 API를 정확히 호출하게 만드는 능력이 필수이며, 이는 에이전트가 실질적인 비즈니스 로직을 수행하게 만드는 핵심입니다.
+    3.  **탄탄한 기본기 (Spring/K8s)**: AI 지식은 기본이며, 수백만 명이 사용하는 환경을 견디는 **엔터프라이즈급 백엔드 설계**와 **데브옵스(DevOps)** 운영 능력을 동시에 요구합니다.
+    4.  **에이전트의 미래 (MCP/Streaming)**: Anthropic의 **MCP(Model Context Protocol)** 같은 최신 표준과, 실시간 응답(Streaming) 아키텍처에 대한 깊은 이해를 중요하게 보고 있습니다.
+
+
+2. **오늘의집 (Bucketplace) - Fullstack Product Engineer, AI Agent**
+    - [채용 공고 링크](https://bucketplace.career.greetinghr.com/ko/o/191953)
+    *   **핵심 업무**: AI Agent 및 제반 시스템 설계/구축 (탐색에서 '상담'으로의 전환)
+    *   **우대 사항**: **n8n**, **LangChain**, **LlamaIndex** 등 AI 연동 및 자동화 도구 사용 경험
+
+    <details>
+    <summary>📄 <b>채용 공고 상세 내용 (Archive)</b></summary>
+
+    **[모집직무]** Fullstack Product Engineer, AI Agent
+    
+    **[포지션 소개]**
+    AI Agent팀은 AI를 통해 오늘의집을 '탐색하는 플랫폼'에서 '상담받는 파트너'로 전환하는 것을 목표로 합니다. 복잡한 인테리어 의사결정 과정을 단순하게 만들고, 영감과 실행 사이의 간극을 좁히며, 모든 사용자에게 개인 인테리어 컨설턴트(AI Agent)를 제공하며, 사용자는 AI Agent와의 대화를 통해 자신의 취향을 발견하고, 맞춤형 추천을 받으며, 구매 결정까지 자연스럽게 이어지는 새로운 경험을 만나게 됩니다. 오늘의집은 AI Native 조직으로 변화 중입니다. 우리는 AI를 도구처럼 쓰는 것을 넘어, 일의 방식 자체를 함께 바꿔나갈 동료를 기다리고 있습니다.
+
+    **[주요업무]**
+    - 오늘의집 AI Agent 및 이를 위한 제반 시스템 설계 및 구축
+    - 프론트엔드(React, Next.js, TypeScript)와 백엔드(Spring/Kotlin/Java, Python) 기술 스택을 활용한 서비스 end-to-end 구현
+    - AI 도구 활용 아이디어 구체화 및 개발·테스트·문서화 효율화
+    - AI를 단순 도구가 아닌 협업자로 활용한 서비스 내 AI 활용 가능성 발굴 및 논의
+
+    **[자격요건]**
+    - 만 3년 이상의 풀스택 개발 경험 (FE + BE)
+    - GPT, Claude 등 LLM 기반 도구를 실제 업무에 활용해본 경험을 토대로 인사이트, 한계를 설명할 수 있는 분
+
+    **[우대사항]**
+    - n8n, LangChain, LlamaIndex 등 AI 연동 및 자동화 도구 사용 경험
+    - AI 기반 프로토타입을 기획 단계부터 빠르게 구현/실험한 경험 보유
+    - 오픈소스 AI 프로젝트 참여 또는 개인 프로젝트 운영 경험
+    </details>
+
+    #### 🔍 오늘의집 공고 심층 분석: "기술의 경계를 넘는 문제 해결사"
+    1.  **풀스택 제품 엔지니어 (Product Engineer)**: 단순히 백엔드에서 API만 던지는 것이 아니라, **FE(React/Next.js) + BE(Kotlin/Python) + AI**를 아우르며 사용자 경험(UX) 전체를 책임지는 'End-to-End' 역량을 강조합니다.
+    2.  **검색에서 상담으로 (Consulting Partner)**: 단순히 상품을 찾아주는 검색 엔진을 넘어, 대화를 통해 취향을 발견하고 구매까지 돕는 **'개인 컨설턴트'**로서의 에이전트를 지향합니다. 고도의 추론 능력 설계가 핵심입니다.
+    3.  **AI Native 워크플로우**: 개발 과정 자체(테스트, 문서화 등)에 AI를 적극 도입하여 **개발 효율을 극대화**하는 문화를 강조합니다. 이는 에이전트를 만드는 사람이 스스로 에이전딕하게 일해야 함을 의미합니다.
+    4.  **실무형 도구 숙련도**: **n8n, LangChain, LlamaIndex**와 같은 프레임워크 사용 경험을 명시적으로 우대하며, 빠른 프로토타이핑과 실험 정신을 높게 평가합니다.
 
 > **👀 트렌드 분석**:
 > 단순히 "챗봇"을 만드는 것을 넘어, **"여러 에이전트가 협업(Multi-Agent)"** 하거나 **"기존 업무 도구와 연동(Workflow)"** 하는 능력을 핵심으로 보고 있습니다.
@@ -312,6 +371,58 @@ https://docs.google.com/spreadsheets/d/1i2n3mvFYfEF3qB3boLtko5WJuGO5Khi0IYqfm2yJ
 - **[OpenAI Platform](https://platform.openai.com/docs/)**: API 활용 및 에이전트 가이드.
 - **[Anthropic Claude Docs](https://docs.anthropic.com/en/docs/welcome)**: Claude 활용 및 Computer Use 가이드.
 - **[Google Gemini Docs](https://ai.google.dev/docs)**: Gemini API 및 멀티모달 활용 가이드.
+
+---
+
+## 11. 에이전트 개발자 필수 공통 지식 (Common Technical Knowledge)
+
+에이전트 프레임워크가 달라도 내부를 흐르는 핵심 기술은 동일합니다. 면접에서 기술적 깊이를 보여줄 수 있는 포인트들입니다.
+
+### 🔍 검색 기술: Keyword vs Semantic
+*   **Keyword Search (키워드 검색)**: "커피" 검색 시 "커피" 단어가 포함된 문서를 찾음 (정확도).
+*   **Semantic Search (시맨틱 검색)**: "잠 깨는 음료" 검색 시 "커피"나 "에너지 드링크" 관련 문서를 찾음 (의미 기반).
+*   **Hybrid Search (하이브리드)**: 실무에서는 두 방식을 섞어서 사용합니다. 고유 명사는 키워드로, 추상적 질문은 시맨틱으로 해결합니다.
+
+### 🧬 저장 기술: Vector Store vs Vector DB
+*   **Vector Store**: 로컬 메모리/파일에 가볍게 저장. (실습/프로토타입용. 예: `Chroma`, `FAISS`)
+*   **Vector DB**: 대규모 데이터, 보안, 확장을 고려한 전문 시스템. (실서비스용. 예: `Pinecone`, `Milvus`)
+
+### ✂️ 청킹(Chunking) 전략
+방대한 문서를 AI에게 통째로 줄 수 없기에 잘게 쪼개는 기술입니다.
+*   **Fixed-size**: 500자씩 뚝 끊음 (단순하지만 문맥이 끊길 위험 있음).
+*   **Recursive Character**: 문단, 마침표 기준으로 유연하게 자름 (가장 많이 씀).
+*   **Overlap**: 조각들 사이에 10~20% 내용을 겹치게 하여 문맥 단절을 방지합니다.
+
+---
+
+## 12. AI 에이전트 면접 예상 질문 리스트 (Interview Q&A)
+
+면접관은 여러분이 **"기술의 한계를 알고 이를 어떻게 극복했는지"**를 궁금해합니다.
+
+<details>
+<summary><b>Q1. RAG(검색 증강 생성)가 왜 필요한가요?</b></summary>
+<b>A:</b> LLM의 지식은 학습 시점에 멈춰있어 최신 정보나 기업 내부 데이터를 알지 못합니다. RAG는 외부 데이터베이스를 '오픈북'처럼 활용하게 하여 답변의 정확도를 높이고 환각(Hallucination) 현상을 획기적으로 줄여주기 때문에 필수적입니다.
+</details>
+
+<details>
+<summary><b>Q2. 할루시네이션(환각)을 제어하는 본인만의 노하우가 있나요?</b></summary>
+<b>A:</b> 첫째, <b>RAG</b>를 통해 근거 문서를 제시합니다. 둘째, <b>Self-Correction</b> 루프를 설계하여 AI가 자신의 답변이 근거 문서와 일치하는지 스스로 검수하게 합니다. 셋째, 프롬프트에 "모르면 모른다고 답하라"는 제약사항을 명확히 명시합니다.
+</details>
+
+<details>
+<summary><b>Q3. 여러 프레임워크(LangChain, CrewAI 등) 중 어떤 기준으로 선택하나요?</b></summary>
+<b>A:</b> 정밀한 제어와 상태 관리가 필요한 실제 서비스 수준이라면 <b>LangGraph</b>를, 논리적인 역할 분담과 협업 시나리오가 중요하다면 <b>CrewAI</b>를 선택합니다. 데이터 로딩과 검색 효율이 관건이라면 <b>LlamaIndex</b>를 최우선으로 고려합니다.
+</details>
+
+<details>
+<summary><b>Q4. 에이전트의 Latency(속도) 문제를 어떻게 해결할 수 있을까요?</b></summary>
+<b>A:</b> <b>비동기(Async) 처리</b>를 통해 독립적인 태스크를 병렬로 실행합니다. 또한 전체 답변이 나오기 전 사용자에게 <b>Streaming</b>으로 텍스트를 먼저 보여주어 체감 대기 시간을 줄입니다. 마지막으로, 모든 단계에 LLM을 쓰기보다 간단한 로직은 <b>Code 노드</b>로 대체합니다.
+</details>
+
+<details>
+<summary><b>Q5. 에이전트가 무한 루프에 빠지거나 엉뚱한 도구를 호출하면 어떻게 하나요?</b></summary>
+<b>A:</b> <b>Max Iterations</b>를 설정하여 강제 종료 장치를 만듭니다. 또한 에이전트가 도구를 호출하기 전 '생각(Thought)' 단계를 거치게 하는 <b>ReAct</b> 패턴을 적용하고, 도구 호출 실패 시 재시도(Retry)하거나 사람에게 개입을 요청하는 설계를 추가합니다.
+</details>
 
 ---
 

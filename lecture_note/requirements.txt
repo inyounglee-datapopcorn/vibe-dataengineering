@@ -19,3 +19,7 @@ pyautogen
 # CrewAI
 crewai
 crewai[tools]
+
+# LlamaIndex
+llama-index
+llama-index-llms-openai
